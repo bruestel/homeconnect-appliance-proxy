@@ -1,0 +1,106 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.1.0'
+	id 'org.springframework.boot' version '3.5.0' apply false
+}
+
+group = 'net.bruestel.homeconnect'
+version = '0.2.0-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+
+application {
+	mainClass = 'net.bruestel.homeconnect.haproxy.HomeConnectApplianceProxyApplication'
+}
+
+javafx {
+	version = "21.0.7"
+	modules = [ 'javafx.controls' ]
+}
+
+bootJar {
+	archiveBaseName.set(project.name)
+	archiveAppendix.set(getJavaFxPlatform())
+	archiveVersion.set(project.version)
+	archiveExtension.set("jar")
+}
+
+jar {
+	enabled = false
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name = "bruestel-conscrypt"
+		url = uri("https://dl.cloudsmith.io/public/bruestel/conscrypt/maven/")
+		mavenContent {
+			releasesOnly()
+		}
+		metadataSources {
+			mavenPom()
+			artifact()
+		}
+	}
+}
+
+dependencies {
+	// jetty
+	implementation 'org.eclipse.jetty:jetty-server:12.0.21'
+	implementation 'org.eclipse.jetty.websocket:jetty-websocket-jetty-server:12.0.21'
+	implementation 'org.eclipse.jetty.websocket:jetty-websocket-jetty-client:12.0.21'
+	implementation 'org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:12.0.21'
+	implementation 'org.eclipse.jetty.ee10:jetty-ee10-servlet:12.0.21'
+	implementation 'jakarta.websocket:jakarta.websocket-api:2.2.0'
+	implementation 'jakarta.websocket:jakarta.websocket-client-api:2.2.0'
+
+	// encryption etc.
+	implementation 'org.conscrypt:conscrypt-openjdk-uber:2.6-jb20250105'
+
+	// logging
+	implementation 'ch.qos.logback:logback-classic:1.5.18'
+
+	// mDNS
+	implementation 'org.jmdns:jmdns:3.6.1'
+
+	// json
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.19.0'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.19.0'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
+
+	// misc
+	compileOnly 'org.projectlombok:lombok:1.18.38'
+	annotationProcessor 'org.projectlombok:lombok:1.18.38'
+	implementation 'org.apache.commons:commons-lang3:3.17.0'
+	implementation 'commons-codec:commons-codec:1.18.0'
+}
+
+private static def getJavaFxPlatform() {
+	def os = System.getProperty('os.name').toLowerCase(Locale.ENGLISH)
+	if (os.contains('win')) {
+		return 'win'
+	}
+	if (os.contains('nix') || os.contains('nux')) {
+		return 'linux'
+	}
+	if (os.contains('osx') || os.contains('mac')) {
+		return 'mac'
+	}
+	assert false: "unknown os: $os"
+}
+
+

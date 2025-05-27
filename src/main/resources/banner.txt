@@ -1,0 +1,1 @@
+${AnsiColor.BLUE}${AnsiStyle.BOLD}Home Connect${AnsiColor.BLACK} Home Appliance Proxy ${application.version} ${AnsiStyle.NORMAL}${AnsiColor.BRIGHT_BLACK}(Spring Boot ${AnsiStyle.BOLD}v${spring-boot.version}${AnsiStyle.NORMAL}${AnsiColor.BRIGHT_BLACK})${AnsiStyle.NORMAL}
